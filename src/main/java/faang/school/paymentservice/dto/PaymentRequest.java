@@ -1,18 +1,24 @@
 package faang.school.paymentservice.dto;
 
-import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import lombok.Builder;
+
 import java.math.BigDecimal;
 
+@Builder
 public record PaymentRequest(
         @NotNull
         long paymentNumber,
 
-        @Min(1)
-        @NotNull
+        @NotNull(message = "Amount cannot be null")
+        @Positive(message = "Amount must be positive")
+        @Digits(integer = 10, fraction = 2, message = "Invalid amount format")
         BigDecimal amount,
 
-        @NotNull
-        Currency currency
+        @NotBlank(message = "CurrencyCode must not be blank")
+        String currencyCode
 ) {
 }
