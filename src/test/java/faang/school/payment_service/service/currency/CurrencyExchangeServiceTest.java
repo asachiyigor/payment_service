@@ -1,8 +1,8 @@
 package faang.school.payment_service.service.currency;
 
 import faang.school.payment_service.client.exchange.OpenExchangeRatesClient;
-import faang.school.payment_service.dto.ExchangeRateResponse;
-import faang.school.payment_service.dto.PaymentSendRequest;
+import faang.school.payment_service.dto.currency.CurrencyExchangeRateResponse;
+import faang.school.payment_service.dto.currency.CurrencyPaymentRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CurrencyExchangeServiceTest {
-    private ExchangeRateResponse mockResponse;
+    private CurrencyExchangeRateResponse mockResponse;
 
     @Mock
     private OpenExchangeRatesClient exchangeRatesClient;
@@ -34,7 +34,7 @@ class CurrencyExchangeServiceTest {
 
     @BeforeEach
     void setUp() {
-        mockResponse = new ExchangeRateResponse(Map.of("EUR", 0.95));
+        mockResponse = new CurrencyExchangeRateResponse(Map.of("EUR", 0.95));
 
         try {
             var appIdField = CurrencyExchangeService.class.getDeclaredField("appId");
@@ -51,7 +51,7 @@ class CurrencyExchangeServiceTest {
     @Test
     @DisplayName("When payment is in USD, should return original amount without conversion")
     public void testConvertCurrency_UsdPayment_ReturnsOriginalAmount() {
-        PaymentSendRequest usdPayment = createPaymentRequest("USD", new BigDecimal("100.00"));
+        CurrencyPaymentRequest usdPayment = createPaymentRequest("USD", new BigDecimal("100.00"));
         BigDecimal result = currencyExchangeService.convertCurrency(usdPayment);
         assertEquals(new BigDecimal("100.00"), result);
         verifyNoInteractions(exchangeRatesClient);
@@ -63,7 +63,7 @@ class CurrencyExchangeServiceTest {
     void testConvertCurrency_EUR() {
         when(exchangeRatesClient.getLatestRates("test-app-id"))
                 .thenReturn(mockResponse);
-        PaymentSendRequest request = createPaymentRequest("EUR", new BigDecimal("100.00"));
+        CurrencyPaymentRequest request = createPaymentRequest("EUR", new BigDecimal("100.00"));
         BigDecimal convertedAmount = currencyExchangeService.convertCurrency(request);
         BigDecimal UsdAmount = request.amount()
                 .divide(BigDecimal.valueOf(0.95), 2, RoundingMode.HALF_UP);
@@ -76,7 +76,7 @@ class CurrencyExchangeServiceTest {
     @Test
     @DisplayName("When payment currency is unsupported, should throw an exception")
     public void testConvertCurrency_UnsupportedCurrency_ThrowsException() {
-        PaymentSendRequest unsupportedPayment = createPaymentRequest("XYZ", new BigDecimal("100.00"));
+        CurrencyPaymentRequest unsupportedPayment = createPaymentRequest("XYZ", new BigDecimal("100.00"));
         when(exchangeRatesClient.getLatestRates(anyString()))
                 .thenReturn(mockResponse);
         IllegalArgumentException exception = assertThrows(
@@ -89,7 +89,7 @@ class CurrencyExchangeServiceTest {
     @Test
     @DisplayName("When external exchange rate API fails, should throw an exception")
     public void testConvertCurrency_ExternalApiFailure_ThrowsException() {
-        PaymentSendRequest eurPayment = createPaymentRequest("EUR", new BigDecimal("100.00"));
+        CurrencyPaymentRequest eurPayment = createPaymentRequest("EUR", new BigDecimal("100.00"));
         when(exchangeRatesClient.getLatestRates(anyString()))
                 .thenThrow(new RuntimeException("API connection error"));
         IllegalArgumentException exception = assertThrows(
@@ -102,8 +102,8 @@ class CurrencyExchangeServiceTest {
         );
     }
 
-    private PaymentSendRequest createPaymentRequest(String currencyCode, BigDecimal amount) {
-        return new PaymentSendRequest(
+    private CurrencyPaymentRequest createPaymentRequest(String currencyCode, BigDecimal amount) {
+        return new CurrencyPaymentRequest(
                 1L,
                 amount,
                 String.valueOf(currencyCode)

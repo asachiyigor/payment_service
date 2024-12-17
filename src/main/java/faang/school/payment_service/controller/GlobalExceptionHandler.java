@@ -1,7 +1,7 @@
 package faang.school.payment_service.controller;
 
-import faang.school.payment_service.dto.Currency;
-import faang.school.payment_service.dto.ErrorResponse;
+import faang.school.payment_service.dto.currency.Currency;
+import faang.school.payment_service.dto.currency.CurrencyErrorResponse;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -28,16 +28,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+    public CurrencyErrorResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         String message = e.getMessage().contains("Currency") ? "We only accept " + Currency.USD
                 : e.getMessage();
 
-        return new ErrorResponse(message);
+        return new CurrencyErrorResponse(message);
     }
 
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleRuntimeException(RuntimeException e) {
-        return new ErrorResponse(e.getMessage());
+    public CurrencyErrorResponse handleRuntimeException(RuntimeException e) {
+        return new CurrencyErrorResponse(e.getMessage());
     }
 }

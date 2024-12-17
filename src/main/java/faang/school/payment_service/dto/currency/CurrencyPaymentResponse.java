@@ -1,8 +1,10 @@
-package faang.school.payment_service.dto;
+package faang.school.payment_service.dto.currency;
+
+import faang.school.payment_service.dto.PaymentStatus;
 
 import java.math.BigDecimal;
 
-public record PaymentSendResponse(
+public record CurrencyPaymentResponse(
         PaymentStatus status,
         int verificationCode,
         long paymentNumber,

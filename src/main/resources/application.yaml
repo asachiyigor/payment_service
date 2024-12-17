@@ -32,6 +32,7 @@ spring:
         CLEARING-CHANNEL:
           name: payment-clearing
 
+
 server:
   port: 9080
 

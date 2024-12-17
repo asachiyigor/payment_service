@@ -1,4 +1,4 @@
-package faang.school.payment_service.dto;
+package faang.school.payment_service.dto.currency;
 
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
@@ -9,7 +9,7 @@ import lombok.Builder;
 import java.math.BigDecimal;
 
 @Builder
-public record PaymentSendRequest(
+public record CurrencyPaymentRequest(
         @NotNull
         long paymentNumber,
 

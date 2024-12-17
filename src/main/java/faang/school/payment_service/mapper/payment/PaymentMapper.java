@@ -1,7 +1,8 @@
 package faang.school.payment_service.mapper.payment;
 
+
 import faang.school.payment_service.dto.PaymentOperation;
-import faang.school.payment_service.dto.PaymentOperationDto;
+import faang.school.payment_service.dto.payment.PaymentOperationDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 

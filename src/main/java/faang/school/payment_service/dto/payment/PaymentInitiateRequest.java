@@ -1,4 +1,4 @@
-package faang.school.payment_service.dto;
+package faang.school.payment_service.dto.payment;
 
 import lombok.Builder;
 import lombok.Data;

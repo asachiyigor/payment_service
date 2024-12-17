@@ -1,12 +1,14 @@
 package faang.school.payment_service.controller;
 
-import faang.school.payment_service.dto.Currency;
-import faang.school.payment_service.dto.PaymentInitiateRequest;
-import faang.school.payment_service.dto.PaymentSendRequest;
-import faang.school.payment_service.dto.PaymentSendResponse;
 import faang.school.payment_service.dto.PaymentStatus;
+import faang.school.payment_service.dto.currency.Currency;
+import faang.school.payment_service.dto.currency.CurrencyPaymentRequest;
+import faang.school.payment_service.dto.currency.CurrencyPaymentResponse;
+import faang.school.payment_service.dto.payment.PaymentInitiateRequest;
 import faang.school.payment_service.service.currency.CurrencyExchangeService;
-import faang.school.payment_service.service.payment.PaymentServiceImpl;
+import faang.school.payment_service.service.payment.PaymentService;
+
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,14 +24,14 @@ import java.text.DecimalFormat;
 import java.util.Random;
 
 @RestController
-@RequestMapping("/api/v1/payments")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class PaymentController {
+    private final PaymentService paymentService;
     private final CurrencyExchangeService currencyExchangeService;
-    private final PaymentServiceImpl paymentService;
 
-    @PostMapping("/send")
-    public PaymentSendResponse sendPayment(@RequestBody @Validated PaymentSendRequest dto) {
+    @PostMapping("/payment")
+    public CurrencyPaymentResponse sendPayment(@RequestBody @Validated CurrencyPaymentRequest dto) {
         BigDecimal currencyAmount = currencyExchangeService.convertCurrency(dto);
 
         DecimalFormat decimalFormat = new DecimalFormat("0.00");
@@ -39,7 +41,7 @@ public class PaymentController {
                         "Your payment of %s USD was accepted.",
                 formattedSum);
 
-        return new PaymentSendResponse(
+        return new CurrencyPaymentResponse(
                 PaymentStatus.SUCCESS,
                 verificationCode,
                 dto.paymentNumber(),

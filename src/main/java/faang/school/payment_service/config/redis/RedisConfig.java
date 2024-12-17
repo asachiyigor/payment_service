@@ -1,6 +1,5 @@
 package faang.school.payment_service.config.redis;
 
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -21,13 +20,13 @@ public class RedisConfig {
     private int port;
 
     @Value("${spring.data.redis.channels.AUTHORIZATION-CHANNEL.name}")
-    private String AUTHORIZATION_CHANNEL;
+    private String AUTHORIZATION_TOPIC;
 
     @Value("${spring.data.redis.channels.CANCELLATION-CHANNEL.name}")
-    private String CANCELLATION_CHANNEL;
+    private String CANCELLATION_TOPIC;
 
     @Value("${spring.data.redis.channels.CLEARING-CHANNEL.name}")
-    private String CLEARING_CHANNEL;
+    private String CLEARING_TOPIC;
 
     @Bean
     public JedisConnectionFactory jedisConnectionFactory() {
@@ -46,16 +45,16 @@ public class RedisConfig {
 
     @Bean
     public ChannelTopic AUTHORIZATION() {
-        return new ChannelTopic(AUTHORIZATION_CHANNEL);
+        return new ChannelTopic(AUTHORIZATION_TOPIC);
     }
 
     @Bean
     public ChannelTopic CANCELLATION() {
-        return new ChannelTopic(CANCELLATION_CHANNEL);
+        return new ChannelTopic(CANCELLATION_TOPIC);
     }
 
     @Bean
     public ChannelTopic CLEARING() {
-        return new ChannelTopic(CLEARING_CHANNEL);
+        return new ChannelTopic(CLEARING_TOPIC);
     }
 }
