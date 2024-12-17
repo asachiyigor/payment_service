@@ -44,17 +44,17 @@ public class RedisConfig {
     }
 
     @Bean
-    public ChannelTopic AUTHORIZATION() {
+    public ChannelTopic AUTHORIZATION_TOPIC() {
         return new ChannelTopic(AUTHORIZATION_TOPIC);
     }
 
     @Bean
-    public ChannelTopic CANCELLATION() {
+    public ChannelTopic CANCELLATION_TOPIC() {
         return new ChannelTopic(CANCELLATION_TOPIC);
     }
 
     @Bean
-    public ChannelTopic CLEARING() {
+    public ChannelTopic CLEARING_TOPIC() {
         return new ChannelTopic(CLEARING_TOPIC);
     }
 }

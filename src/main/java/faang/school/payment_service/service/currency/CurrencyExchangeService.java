@@ -1,8 +1,8 @@
 package faang.school.payment_service.service.currency;
 
 import faang.school.payment_service.client.exchange.OpenExchangeRatesClient;
-import faang.school.payment_service.dto.ExchangeRateResponse;
-import faang.school.payment_service.dto.PaymentSendRequest;
+import faang.school.payment_service.dto.currency.CurrencyExchangeRateResponse;
+import faang.school.payment_service.dto.currency.CurrencyPaymentRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,13 +24,13 @@ public class CurrencyExchangeService {
     @Value("${currency.exchange.commission}")
     private BigDecimal commission;
 
-    public BigDecimal convertCurrency(PaymentSendRequest request) {
+    public BigDecimal convertCurrency(CurrencyPaymentRequest request) {
         if (request.currencyCode().equals("USD")) {
             return request.amount();
         }
 
         try {
-            ExchangeRateResponse rateResponse = exchangeRatesClient.getLatestRates(appId);
+            CurrencyExchangeRateResponse rateResponse = exchangeRatesClient.getLatestRates(appId);
             Map<String, Double> rates = rateResponse.rates();
 
             if (!rates.containsKey(request.currencyCode())) {
