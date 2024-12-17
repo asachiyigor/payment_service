@@ -1,0 +1,77 @@
+package faang.school.payment_service.dto;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "payment_operations")
+@NoArgsConstructor
+@AllArgsConstructor
+public class PaymentOperation {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "amount", nullable = false, precision = 19, scale = 4)
+    private BigDecimal amount;
+
+    @Column(name = "currency", nullable = false, length = 10)
+    private String currency;
+
+    @Column(name = "sender_acc_id", nullable = false, length = 50)
+    private String senderAccountId;
+
+    @Column(name = "recipient_acc_id", nullable = false, length = 50)
+    private String recipientAccountId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "operation_type", nullable = false, length = 20)
+    private PaymentOperationType operationType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 20)
+    private PaymentStatus status;
+
+    @Column(name = "clear_scheduled_at")
+    private LocalDateTime clearScheduledAt;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    // Optional: External transaction ID for tracking
+    @Column(name = "external_transaction_id", length = 100)
+    private String externalTransactionId;
+
+    // Optional: Additional metadata or reference information
+    @Column(name = "description", length = 255)
+    private String description;
+
+    // Indexes for performance optimization
+    @PrePersist
+    public void prePersist() {
+        if (this.createdAt == null) {
+            this.createdAt = LocalDateTime.now();
+        }
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+}
