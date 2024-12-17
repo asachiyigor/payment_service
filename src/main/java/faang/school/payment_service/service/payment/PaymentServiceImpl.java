@@ -7,9 +7,7 @@ import faang.school.payment_service.dto.payment.PaymentOperationDto;
 import faang.school.payment_service.dto.payment.PaymentOperationType;
 import faang.school.payment_service.exception.InvalidPaymentAmountException;
 import faang.school.payment_service.exception.PaymentNotFoundException;
-import faang.school.payment_service.publisher.AuthorizationEventPublisher;
-import faang.school.payment_service.publisher.CancellationEventPublisher;
-import faang.school.payment_service.publisher.ClearingEventPublisher;
+import faang.school.payment_service.publisher.PaymentsDMSRecipientPublisher;
 import faang.school.payment_service.repository.payment.PaymentOperationRepository;
 import faang.school.payment_service.mapper.payment.PaymentMapper;
 import jakarta.transaction.Transactional;
@@ -18,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Service
 @Slf4j
@@ -27,16 +24,13 @@ import java.time.LocalDateTime;
 public class PaymentServiceImpl implements PaymentService {
     private final PaymentOperationRepository paymentOperationRepository;
     private final PaymentMapper paymentMapper;
-    private final AuthorizationEventPublisher authorizationEventPublisher;
-    private final CancellationEventPublisher cancellationEventPublisher;
-    private final ClearingEventPublisher clearingEventPublisher;
-
+    private final PaymentsDMSRecipientPublisher paymentsDMSRecipientPublisher;
 
     @Override
     public Long initiatePayment(PaymentInitiateRequest request) {
         log.info("Initiating payment: sender={}, recipient={}, amount={}",
-                request.getSenderAccountId(),
-                request.getRecipientAccountId(),
+                request.getOwnerId(),
+                request.getRecipientId(),
                 request.getAmount());
 
         validatePaymentRequest(request);
@@ -45,7 +39,8 @@ public class PaymentServiceImpl implements PaymentService {
                 .save(paymentMapper.toEntity(paymentOperationDto));
         PaymentOperationDto savedDto = paymentMapper.toDto(savedPaymentOperation);
         log.info("Payment initiated successfully: paymentId={}", savedDto.getId());
-        authorizationEventPublisher.publishAuthorizationEvent(savedDto);
+        paymentsDMSRecipientPublisher.publishPaymentsDMSRecipientEvent(savedDto);
+        log.info("короче отправили");
         return savedDto.getId();
     }
 
@@ -61,10 +56,10 @@ public class PaymentServiceImpl implements PaymentService {
                 });
         PaymentOperationDto paymentOperationDto = paymentMapper.toDto(paymentOperation);
         paymentOperationDto.setStatus(PaymentStatus.CANCELLED);
-        paymentOperationDto.setUpdatedAt(LocalDateTime.now());
+//        paymentOperationDto.setUpdatedAt(LocalDateTime.now());
         paymentOperationRepository.save(paymentMapper.toEntity(paymentOperationDto));
         log.info("Payment cancelled successfully: paymentId={}", paymentId);
-        cancellationEventPublisher.publishCancellationEvent(paymentOperationDto);
+//        cancellationEventPublisher.publishCancellationEvent(paymentOperationDto);
     }
 
     @Override
@@ -78,10 +73,10 @@ public class PaymentServiceImpl implements PaymentService {
                 });
         PaymentOperationDto paymentOperationDto = paymentMapper.toDto(paymentOperation);
         paymentOperationDto.setStatus(PaymentStatus.SUCCESS);
-        paymentOperationDto.setUpdatedAt(LocalDateTime.now());
+//        paymentOperationDto.setUpdatedAt(LocalDateTime.now());
         paymentOperationRepository.save(paymentMapper.toEntity(paymentOperationDto));
         log.info("Payment confirmed successfully: paymentId={}", paymentId);
-        clearingEventPublisher.publishClearingEvent(paymentOperationDto);
+//        clearingEventPublisher.publishClearingEvent(paymentOperationDto);
     }
 
     private void validatePaymentRequest(PaymentInitiateRequest request) {
@@ -89,10 +84,10 @@ public class PaymentServiceImpl implements PaymentService {
             log.error("Invalid payment amount: amount={}", request.getAmount());
             throw new InvalidPaymentAmountException("Payment amount must be positive");
         }
-        if (request.getSenderAccountId() == null || request.getRecipientAccountId() == null) {
+        if (request.getOwnerId() == 0 || request.getRecipientId() == 0) {
             log.error("Invalid accounts: sender={}, recipient={}",
-                    request.getSenderAccountId(),
-                    request.getRecipientAccountId());
+                    request.getOwnerId(),
+                    request.getRecipientId());
             throw new InvalidPaymentAmountException("Sender and recipient accounts must be specified");
         }
         log.debug("Payment request validation passed");
@@ -102,12 +97,13 @@ public class PaymentServiceImpl implements PaymentService {
         return PaymentOperationDto.builder()
                 .amount(request.getAmount())
                 .currency(request.getCurrency())
-                .senderAccountId(request.getSenderAccountId())
-                .recipientAccountId(request.getRecipientAccountId())
+                .ownerId(request.getOwnerId())
+                .recipientId(request.getRecipientId())
                 .status(PaymentStatus.PENDING)
                 .operationType(PaymentOperationType.INITIATE)
-                .clearScheduledAt(request.getClearScheduledAt())
-                .createdAt(LocalDateTime.now())
+//                .clearScheduledAt(LocalDateTime.now().plusMinutes(2))
+//                .createdAt(LocalDateTime.now())
+//                .updatedAt(LocalDateTime.now())
                 .build();
     }
 }

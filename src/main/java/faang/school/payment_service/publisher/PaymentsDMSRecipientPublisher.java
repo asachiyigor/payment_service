@@ -8,11 +8,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class CancellationEventPublisher {
+public class PaymentsDMSRecipientPublisher {
     private final RedisTemplate<String, Object> redisTemplate;
-    private final ChannelTopic CANCELLATION_TOPIC;
 
-    public void publishCancellationEvent(PaymentOperationDto operation) {
-        redisTemplate.convertAndSend(CANCELLATION_TOPIC.getTopic(), operation);
+    private final ChannelTopic payments_DMS_recipient;
+
+    public void publishPaymentsDMSRecipientEvent(PaymentOperationDto operation) {
+        redisTemplate.convertAndSend(payments_DMS_recipient.getTopic(), operation);
     }
 }

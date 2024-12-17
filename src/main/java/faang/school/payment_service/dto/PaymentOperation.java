@@ -4,7 +4,9 @@ import faang.school.payment_service.dto.payment.PaymentOperationType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -14,6 +16,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Getter
+@Setter
 public class PaymentOperation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,11 +29,11 @@ public class PaymentOperation {
     @Column(name = "currency", nullable = false, length = 10)
     private String currency;
 
-    @Column(name = "sender_acc_id", nullable = false, length = 50)
-    private String senderAccountId;
+    @Column(name = "from_account_id", nullable = false, length = 50)
+    private Long senderAccountId;
 
-    @Column(name = "recipient_acc_id", nullable = false, length = 50)
-    private String recipientAccountId;
+    @Column(name = "to_account_id", nullable = false, length = 50)
+    private Long recipientAccountId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "operation_type", nullable = false, length = 20)
@@ -39,8 +43,8 @@ public class PaymentOperation {
     @Column(name = "status", nullable = false, length = 20)
     private PaymentStatus status;
 
-    @Column(name = "clear_scheduled_at")
-    private LocalDateTime clearScheduledAt;
+//    @Column(name = "clear_scheduled_at")
+//    private LocalDateTime clearScheduledAt;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -48,13 +52,13 @@ public class PaymentOperation {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // Optional: External transaction ID for tracking
-    @Column(name = "external_transaction_id", length = 100)
-    private String externalTransactionId;
+//    // Optional: External transaction ID for tracking
+//    @Column(name = "external_transaction_id", length = 100)
+//    private String externalTransactionId;
 
-    // Optional: Additional metadata or reference information
-    @Column(name = "description", length = 255)
-    private String description;
+//    // Optional: Additional metadata or reference information
+//    @Column(name = "description", length = 255)
+//    private String description;
 
     // Indexes for performance optimization
     @PrePersist

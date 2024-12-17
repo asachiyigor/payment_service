@@ -19,14 +19,17 @@ public class RedisConfig {
     @Value("${spring.data.redis.port}")
     private int port;
 
-    @Value("${spring.data.redis.channels.AUTHORIZATION-CHANNEL.name}")
-    private String AUTHORIZATION_TOPIC;
+    @Value("${spring.data.redis.channel_recipient}")
+    private String payments_DMS_recipient;
 
-    @Value("${spring.data.redis.channels.CANCELLATION-CHANNEL.name}")
-    private String CANCELLATION_TOPIC;
-
-    @Value("${spring.data.redis.channels.CLEARING-CHANNEL.name}")
-    private String CLEARING_TOPIC;
+//    @Value("${spring.data.redis.channels.AUTHORIZATION-CHANNEL.name}")
+//    private String AUTHORIZATION_TOPIC;
+//
+//    @Value("${spring.data.redis.channels.CANCELLATION-CHANNEL.name}")
+//    private String CANCELLATION_TOPIC;
+//
+//    @Value("${spring.data.redis.channels.CLEARING-CHANNEL.name}")
+//    private String CLEARING_TOPIC;
 
     @Bean
     public JedisConnectionFactory jedisConnectionFactory() {
@@ -44,17 +47,24 @@ public class RedisConfig {
     }
 
     @Bean
-    public ChannelTopic AUTHORIZATION_TOPIC() {
-        return new ChannelTopic(AUTHORIZATION_TOPIC);
+    public ChannelTopic payments_DMS_recipient() {
+        return new ChannelTopic(payments_DMS_recipient);
     }
 
-    @Bean
-    public ChannelTopic CANCELLATION_TOPIC() {
-        return new ChannelTopic(CANCELLATION_TOPIC);
-    }
 
-    @Bean
-    public ChannelTopic CLEARING_TOPIC() {
-        return new ChannelTopic(CLEARING_TOPIC);
-    }
+
+//    @Bean
+//    public ChannelTopic AUTHORIZATION_TOPIC() {
+//        return new ChannelTopic(AUTHORIZATION_TOPIC);
+//    }
+//
+//    @Bean
+//    public ChannelTopic CANCELLATION_TOPIC() {
+//        return new ChannelTopic(CANCELLATION_TOPIC);
+//    }
+//
+//    @Bean
+//    public ChannelTopic CLEARING_TOPIC() {
+//        return new ChannelTopic(CLEARING_TOPIC);
+//    }
 }

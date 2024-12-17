@@ -24,14 +24,8 @@ spring:
     redis:
       port: 6379
       host: localhost
-      channels:
-        AUTHORIZATION-CHANNEL:
-          name: payment-authorization
-        CANCELLATION-CHANNEL:
-          name: payment-cancellation
-        CLEARING-CHANNEL:
-          name: payment-clearing
-
+      channel_recipient: payments_DMS_recipient
+      channel_sender: payments_DMS_sender
 
 server:
   port: 9080
