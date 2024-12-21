@@ -30,10 +30,10 @@ public class PaymentOperation {
     private String currency;
 
     @Column(name = "from_account_id", nullable = false, length = 50)
-    private Long senderAccountId;
+    private Long ownerAccId;
 
     @Column(name = "to_account_id", nullable = false, length = 50)
-    private Long recipientAccountId;
+    private Long recipientAccId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "operation_type", nullable = false, length = 20)

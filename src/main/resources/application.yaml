@@ -24,8 +24,7 @@ spring:
     redis:
       port: 6379
       host: localhost
-      channel_recipient: payments_DMS_recipient
-      channel_sender: payments_DMS_sender
+      initiate_channel: payment_service_initiate
 
 server:
   port: 9080

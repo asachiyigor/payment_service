@@ -12,7 +12,7 @@ public interface PaymentMapper {
 
     PaymentOperationDto toDto(PaymentOperation paymentOperation);
 
-    @Mapping(source = "ownerId", target = "senderAccountId")
-    @Mapping(source = "recipientId", target = "recipientAccountId")
+    @Mapping(source = "ownerAccId", target = "ownerAccId")
+    @Mapping(source = "recipientAccId", target = "recipientAccId")
     PaymentOperation toEntity(PaymentOperationDto paymentOperationDto);
 }

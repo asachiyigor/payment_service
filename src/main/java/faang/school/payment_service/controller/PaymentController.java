@@ -4,11 +4,11 @@ import faang.school.payment_service.dto.PaymentStatus;
 import faang.school.payment_service.dto.currency.Currency;
 import faang.school.payment_service.dto.currency.CurrencyPaymentRequest;
 import faang.school.payment_service.dto.currency.CurrencyPaymentResponse;
-import faang.school.payment_service.dto.payment.PaymentInitiateRequest;
+import faang.school.payment_service.dto.payment.PaymentOperationDto;
 import faang.school.payment_service.service.currency.CurrencyExchangeService;
+
+
 import faang.school.payment_service.service.payment.PaymentService;
-
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -54,7 +54,7 @@ public class PaymentController {
     }
 
     @PostMapping("/initiate")
-    public ResponseEntity<Long> initiatePayment(@Valid @RequestBody PaymentInitiateRequest request) {
+    public ResponseEntity<Long> initiatePayment(@Valid @RequestBody PaymentOperationDto request) {
         Long paymentId = paymentService.initiatePayment(request);
         return ResponseEntity.accepted().body(paymentId);
     }
