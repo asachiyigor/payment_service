@@ -55,10 +55,8 @@ public class PaymentService {
                 });
         PaymentOperationDto paymentOperationDto = paymentMapper.toDto(paymentOperation);
         paymentOperationDto.setStatus(PaymentStatus.CANCELLED);
-//        paymentOperationDto.setUpdatedAt(LocalDateTime.now());
         paymentOperationRepository.save(paymentMapper.toEntity(paymentOperationDto));
         log.info("Payment cancelled successfully: paymentId={}", paymentId);
-//        cancellationEventPublisher.publishCancellationEvent(paymentOperationDto);
     }
 
     public void confirmPayment(Long paymentId) {

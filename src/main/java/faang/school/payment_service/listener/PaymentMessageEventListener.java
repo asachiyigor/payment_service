@@ -1,23 +1,15 @@
 package faang.school.payment_service.listener;
 
-import faang.school.payment_service.dto.PaymentOperation;
-import faang.school.payment_service.dto.PaymentStatus;
 import faang.school.payment_service.dto.RedisMessage;
-import faang.school.payment_service.dto.payment.PaymentOperationDto;
 import faang.school.payment_service.publisher.PaymentMessageEventPublisher;
-import faang.school.payment_service.repository.payment.PaymentOperationRepository;
 import faang.school.payment_service.service.payment.PaymentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j

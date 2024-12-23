@@ -2,6 +2,7 @@ package faang.school.payment_service.publisher;
 
 import faang.school.payment_service.dto.RedisMessage;
 import faang.school.payment_service.dto.payment.PaymentOperationDto;
+import faang.school.payment_service.repository.payment.PaymentOperationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
