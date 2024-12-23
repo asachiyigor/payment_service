@@ -12,10 +12,11 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import faang.school.payment_service.redis.RedisMessageBroker;
+import faang.school.payment_service.publisher.PaymentMessageEventPublisher;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -25,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 public class PaymentService {
     private final PaymentOperationRepository paymentOperationRepository;
     private final PaymentMapper paymentMapper;
-    private final RedisMessageBroker redisMessageBroker;
+    private final PaymentMessageEventPublisher paymentMessageEventPublisher;
 
     public Long initiatePayment(PaymentOperationDto request) {
         log.info("Initiating payment: owner={}, recipient={}, amount={}",
@@ -39,7 +40,7 @@ public class PaymentService {
                 .save(paymentMapper.toEntity(paymentOperationDto));
         PaymentOperationDto savedDto = paymentMapper.toDto(savedPaymentOperation);
         log.info("Payment initiated successfully: paymentId={}", savedDto.getId());
-        redisMessageBroker.sendAndReceive(savedDto, 10, TimeUnit.SECONDS);
+        paymentMessageEventPublisher.sendAndReceive(savedDto, 10, TimeUnit.SECONDS);
         return savedDto.getId();
     }
 
@@ -78,7 +79,7 @@ public class PaymentService {
 
     public PaymentOperationDto processPayment(PaymentOperationDto payment) {
         try {
-            return redisMessageBroker.sendAndReceive(payment, 5, TimeUnit.SECONDS);
+            return paymentMessageEventPublisher.sendAndReceive(payment, 5, TimeUnit.SECONDS);
         } catch (Exception e) {
             log.error("Error processing payment: {}", e.getMessage());
             throw new RuntimeException("Payment processing failed", e);
@@ -97,6 +98,36 @@ public class PaymentService {
             throw new InvalidPaymentAmountException("Sender and recipient accounts must be specified");
         }
         log.debug("Payment request validation passed");
+    }
+
+    public void updatePaymentOperation(PaymentOperationDto paymentData) {
+        try {
+            Optional<PaymentOperation> paymentOptional =
+                    paymentOperationRepository.findByIdAndStatus(paymentData.getId(), PaymentStatus.PENDING);
+
+            if (paymentOptional.isPresent()) {
+                PaymentOperation payment = paymentOptional.get();
+
+                payment.setAmount(paymentData.getAmount());
+                payment.setCurrency(paymentData.getCurrency());
+                payment.setOwnerAccId(paymentData.getOwnerAccId());
+                payment.setRecipientAccId(paymentData.getRecipientAccId());
+                payment.setOperationType(paymentData.getOperationType());
+                payment.setStatus(paymentData.getStatus());
+                payment.setUpdatedAt(LocalDateTime.now());
+
+                paymentOperationRepository.save(payment);
+
+                log.info("Successfully updated payment_operation with ID: {}",
+                        paymentData.getId());
+            } else {
+                log.warn("Payment operation with ID: {} and status PENDING not found",
+                        paymentData.getId());
+            }
+        } catch (Exception e) {
+            log.error("Error updating payment_operation: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to update payment_operation", e);
+        }
     }
 
     private PaymentOperationDto createPaymentOperationDto(PaymentOperationDto request) {

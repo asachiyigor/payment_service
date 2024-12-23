@@ -1,4 +1,4 @@
-package faang.school.payment_service.redis;
+package faang.school.payment_service.publisher;
 
 import faang.school.payment_service.dto.RedisMessage;
 import faang.school.payment_service.dto.payment.PaymentOperationDto;
@@ -16,9 +16,9 @@ import java.util.concurrent.TimeUnit;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class RedisMessageBroker {
+public class PaymentMessageEventPublisher {
     private final RedisTemplate<String, Object> redisTemplate;
-    private final ChannelTopic payment_service_initiate;
+    private final ChannelTopic initiateReqChannelTopic;
     public static final ConcurrentHashMap<String, CompletableFuture<RedisMessage>> pendingRequests = new ConcurrentHashMap<>();
 
     public PaymentOperationDto sendAndReceive(PaymentOperationDto payment, long timeout, TimeUnit unit) {
@@ -32,7 +32,7 @@ public class RedisMessageBroker {
         pendingRequests.put(correlationId, future);
 
         try {
-            redisTemplate.convertAndSend(payment_service_initiate.getTopic(), request);
+            redisTemplate.convertAndSend(initiateReqChannelTopic.getTopic(), request);
             RedisMessage response = future.get(timeout, unit);
             if (response.getError() != null) {
                 throw new RuntimeException(response.getError());

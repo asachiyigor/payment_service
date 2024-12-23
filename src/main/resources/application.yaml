@@ -24,7 +24,8 @@ spring:
     redis:
       port: 6379
       host: localhost
-      initiate_channel: payment_service_initiate
+      initiate_req_channel: payment_service_initiate_request
+      initiate_res_channel: payment_service_initiate_response
 
 server:
   port: 9080
