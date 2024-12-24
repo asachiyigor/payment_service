@@ -6,7 +6,7 @@ CREATE TABLE payment_operations
     currency           varchar(3),
     from_account_id    BIGINT         NOT NULL,
     to_account_id      BIGINT         NOT NULL,
-    operation_type     varchar(10),
+    operation_type     varchar(11),
     clear_scheduled_at  TIMESTAMP,
     created_at         TIMESTAMP      DEFAULT CURRENT_TIMESTAMP,
     updated_at         TIMESTAMP      DEFAULT CURRENT_TIMESTAMP

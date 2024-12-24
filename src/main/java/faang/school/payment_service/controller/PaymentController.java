@@ -23,8 +23,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
+
 
 @RestController
 @RequestMapping("/api")
@@ -55,11 +54,6 @@ public class PaymentController {
                 message
         );
     }
-
-//    @PostMapping("/process")
-//    public void processPayment(@Valid @RequestBody PaymentOperationDto request) {
-//        paymentService.processPayment(request);
-//    }
 
     @PostMapping("/initiate")
     public CompletableFuture<PaymentOperationDto> initiatePayment(@Valid @RequestBody PaymentOperationDto request) {

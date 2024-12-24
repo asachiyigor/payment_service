@@ -2,7 +2,7 @@ package faang.school.payment_service.listener;
 
 import faang.school.payment_service.dto.RedisMessage;
 import faang.school.payment_service.publisher.PaymentMessageEventPublisher;
-import faang.school.payment_service.service.payment.PaymentService;
+import faang.school.payment_service.service.payment.PaymentOperationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.Message;
@@ -16,7 +16,8 @@ import java.util.concurrent.CompletableFuture;
 @Component
 @RequiredArgsConstructor
 public class PaymentMessageEventListener implements MessageListener {
-private final PaymentService paymentService;
+private final PaymentOperationService paymentOperationService;
+
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
@@ -45,11 +46,12 @@ private final PaymentService paymentService;
             CompletableFuture<RedisMessage> future =
                     PaymentMessageEventPublisher.pendingRequests.get(receivedMessage.getCorrelationId());
 
+            log.info("There is no future for correlationId: {}", receivedMessage.getCorrelationId());
             if (future != null) {
                 future.complete(receivedMessage);
                 log.info("Completed future for correlationId: {}", receivedMessage.getCorrelationId());
 
-                paymentService.updatePaymentOperation(receivedMessage.getPayload());
+                paymentOperationService.updatePaymentOperation(receivedMessage.getPayload());
                 log.info("Update payment operation with payload: {}",
                         receivedMessage.getPayload());
             } else {
