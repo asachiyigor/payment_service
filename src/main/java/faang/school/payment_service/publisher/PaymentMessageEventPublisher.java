@@ -2,7 +2,6 @@ package faang.school.payment_service.publisher;
 
 import faang.school.payment_service.dto.RedisMessage;
 import faang.school.payment_service.dto.payment.PaymentOperationDto;
-import faang.school.payment_service.repository.payment.PaymentOperationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -22,7 +21,7 @@ public class PaymentMessageEventPublisher {
     private final ChannelTopic initiateReqChannelTopic;
     public static final ConcurrentHashMap<String, CompletableFuture<RedisMessage>> pendingRequests = new ConcurrentHashMap<>();
 
-    public PaymentOperationDto sendAndReceive(PaymentOperationDto payment, long timeout, TimeUnit unit) {
+    public void sendRequest(PaymentOperationDto payment, long timeout, TimeUnit unit) {
         String correlationId = UUID.randomUUID().toString();
         RedisMessage request = new RedisMessage();
         request.setCorrelationId(correlationId);
@@ -38,7 +37,6 @@ public class PaymentMessageEventPublisher {
             if (response.getError() != null) {
                 throw new RuntimeException(response.getError());
             }
-            return response.getPayload();
         } catch (Exception e) {
             throw new RuntimeException("Failed to get response", e);
         } finally {

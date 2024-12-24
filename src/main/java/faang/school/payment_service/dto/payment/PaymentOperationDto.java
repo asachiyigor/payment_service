@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -15,10 +14,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class PaymentOperationDto {
     private Long id;
-    private BigDecimal amount; //сумма
-    private String currency; // валюта
-    private long ownerAccId; //счет отправителя (проверку что такой счет существует)
-    private long recipientAccId; //счет получателя (проверка что счет корректен)
+    private BigDecimal amount;
+    private String currency;
+    private long ownerAccId;
+    private long recipientAccId;
     private PaymentOperationType operationType;
     private PaymentStatus status;
     private String clearScheduledAt;

@@ -47,9 +47,11 @@ private final PaymentService paymentService;
 
             if (future != null) {
                 future.complete(receivedMessage);
-                log.debug("Completed future for correlationId: {}", receivedMessage.getCorrelationId());
+                log.info("Completed future for correlationId: {}", receivedMessage.getCorrelationId());
 
                 paymentService.updatePaymentOperation(receivedMessage.getPayload());
+                log.info("Update payment operation with payload: {}",
+                        receivedMessage.getPayload());
             } else {
                 log.warn("No pending request found for correlationId: {}", receivedMessage.getCorrelationId());
             }

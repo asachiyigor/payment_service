@@ -22,6 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 @RestController
 @RequestMapping("/api")
@@ -53,10 +56,14 @@ public class PaymentController {
         );
     }
 
+//    @PostMapping("/process")
+//    public void processPayment(@Valid @RequestBody PaymentOperationDto request) {
+//        paymentService.processPayment(request);
+//    }
+
     @PostMapping("/initiate")
-    public ResponseEntity<Long> initiatePayment(@Valid @RequestBody PaymentOperationDto request) {
-        Long paymentId = paymentService.initiatePayment(request);
-        return ResponseEntity.accepted().body(paymentId);
+    public CompletableFuture<PaymentOperationDto> initiatePayment(@Valid @RequestBody PaymentOperationDto request) {
+        return paymentService.initiatePaymentAsync(request);
     }
 
     @PostMapping("/confirm/{paymentId}")

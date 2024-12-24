@@ -43,8 +43,8 @@ public class PaymentOperation {
     @Column(name = "status", nullable = false, length = 20)
     private PaymentStatus status;
 
-//    @Column(name = "clear_scheduled_at")
-//    private LocalDateTime clearScheduledAt;
+    @Column(name = "clear_scheduled_at")
+    private LocalDateTime clearScheduledAt;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -52,15 +52,6 @@ public class PaymentOperation {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-//    // Optional: External transaction ID for tracking
-//    @Column(name = "external_transaction_id", length = 100)
-//    private String externalTransactionId;
-
-//    // Optional: Additional metadata or reference information
-//    @Column(name = "description", length = 255)
-//    private String description;
-
-    // Indexes for performance optimization
     @PrePersist
     public void prePersist() {
         if (this.createdAt == null) {
