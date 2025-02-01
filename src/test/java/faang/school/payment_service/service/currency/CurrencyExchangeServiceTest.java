@@ -83,7 +83,7 @@ class CurrencyExchangeServiceTest {
                 IllegalArgumentException.class,
                 () -> currencyExchangeService.convertCurrency(unsupportedPayment)
         );
-        assertTrue(exception.getMessage().contains("Unable to process currency conversion. Please make the payment in USD."));
+        assertEquals("Unable to process currency conversion. Please make the payment in USD.", exception.getMessage());
     }
 
     @Test

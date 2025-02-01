@@ -30,29 +30,10 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class PaymentController {
     private final PaymentService paymentService;
-    private final CurrencyExchangeService currencyExchangeService;
 
-    @PostMapping("/payment")
-    public CurrencyPaymentResponse sendPayment(@RequestBody @Validated CurrencyPaymentRequest dto) {
-        BigDecimal currencyAmount = currencyExchangeService.convertCurrency(dto);
-
-        DecimalFormat decimalFormat = new DecimalFormat("0.00");
-        String formattedSum = decimalFormat.format(currencyAmount);
-        int verificationCode = new Random().nextInt(1000, 10000);
-        String message = String.format("Dear friend! Thank you for your purchase! " +
-                        "Your payment of %s USD was accepted.",
-                formattedSum);
-
-        return new CurrencyPaymentResponse(
-                PaymentStatus.SUCCESS,
-                verificationCode,
-                dto.paymentNumber(),
-                dto.amount(),
-                dto.currencyCode(),
-                formattedSum,
-                Currency.USD,
-                message
-        );
+    @PostMapping
+    public CurrencyPaymentResponse sendPayment(@RequestBody CurrencyPaymentRequest dto) {
+        return paymentService.processPayment(dto);
     }
 
     @PostMapping("/initiate")

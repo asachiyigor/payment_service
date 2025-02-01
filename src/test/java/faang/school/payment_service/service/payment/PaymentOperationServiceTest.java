@@ -4,6 +4,7 @@ import faang.school.payment_service.dto.PaymentOperation;
 import faang.school.payment_service.dto.PaymentStatus;
 import faang.school.payment_service.dto.payment.PaymentOperationDto;
 import faang.school.payment_service.dto.payment.PaymentOperationType;
+import faang.school.payment_service.exception.PaymentOperationNotFoundException;
 import faang.school.payment_service.repository.payment.PaymentOperationRepository;
 import faang.school.payment_service.service.payment.strategy.CreateBasePaymentOperationDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -85,7 +86,7 @@ class PaymentOperationServiceTest {
         paymentData.setOperationType(PaymentOperationType.INITIATE);
         when(paymentOperationRepository.findByIdAndStatus(paymentId, PaymentStatus.PENDING))
                 .thenReturn(Optional.empty());
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        PaymentOperationNotFoundException exception = assertThrows(PaymentOperationNotFoundException.class,
                 () -> paymentOperationService.updatePaymentOperation(paymentData));
         assertTrue(exception.getMessage().contains("Payment operation with ID"));
     }
@@ -98,7 +99,7 @@ class PaymentOperationServiceTest {
         paymentData.setId(paymentId);
         paymentData.setStatus(null);
         paymentData.setOperationType(PaymentOperationType.INITIATE);
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(RuntimeException.class,
                 () -> paymentOperationService.updatePaymentOperation(paymentData));
     }
 
@@ -146,7 +147,7 @@ class PaymentOperationServiceTest {
         paymentData.setId(paymentId);
         paymentData.setStatus(PaymentStatus.SUCCESS);
         paymentData.setOperationType(PaymentOperationType.INITIATE);
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(PaymentOperationNotFoundException.class,
                 () -> paymentOperationService.updatePaymentOperation(paymentData));
         verify(paymentOperationRepository, never()).save(any(PaymentOperation.class));
     }

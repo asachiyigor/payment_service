@@ -2,6 +2,9 @@ package faang.school.payment_service.service.payment;
 
 import faang.school.payment_service.dto.PaymentOperation;
 import faang.school.payment_service.dto.PaymentStatus;
+import faang.school.payment_service.dto.currency.Currency;
+import faang.school.payment_service.dto.currency.CurrencyPaymentRequest;
+import faang.school.payment_service.dto.currency.CurrencyPaymentResponse;
 import faang.school.payment_service.dto.payment.PaymentOperationDto;
 import faang.school.payment_service.dto.payment.PaymentOperationType;
 import faang.school.payment_service.exception.InvalidPaymentAmountException;
@@ -9,6 +12,7 @@ import faang.school.payment_service.exception.PaymentNotFoundException;
 import faang.school.payment_service.mapper.payment.PaymentMapper;
 import faang.school.payment_service.publisher.PaymentMessageEventPublisher;
 import faang.school.payment_service.repository.payment.PaymentOperationRepository;
+import faang.school.payment_service.service.currency.CurrencyExchangeService;
 import faang.school.payment_service.service.payment.strategy.PaymentUpdateStrategy;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -17,12 +21,13 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-@Async
 @Service
 @Slf4j
 @Transactional
@@ -31,8 +36,10 @@ public class PaymentService {
     private final PaymentOperationRepository paymentOperationRepository;
     private final PaymentMapper paymentMapper;
     private final PaymentMessageEventPublisher paymentMessageEventPublisher;
+    private final CurrencyExchangeService currencyExchangeService;
     private final Map<String, PaymentUpdateStrategy> strategies;
 
+    @Async
     public CompletableFuture<PaymentOperationDto> initiatePaymentAsync(PaymentOperationDto request) {
         log.info("Initiating payment: owner={}, recipient={}, amount={}",
                 request.getOwnerAccId(),
@@ -59,6 +66,26 @@ public class PaymentService {
                 throw new RuntimeException(e);
             }
         });
+    }
+
+    public CurrencyPaymentResponse processPayment(CurrencyPaymentRequest dto) {
+        BigDecimal currencyAmount = currencyExchangeService.convertCurrency(dto);
+        DecimalFormat decimalFormat = new DecimalFormat("0.00");
+        String formattedSum = decimalFormat.format(currencyAmount);
+        int verificationCode = new Random().nextInt(1000, 10000);
+        String message = String.format("Dear friend! Thank you for your purchase! " +
+                        "Your payment of %s USD was accepted.",
+                formattedSum);
+        return new CurrencyPaymentResponse(
+                PaymentStatus.SUCCESS,
+                verificationCode,
+                dto.paymentNumber(),
+                dto.amount(),
+                dto.currencyCode(),
+                formattedSum,
+                Currency.USD,
+                message
+        );
     }
 
     public void cancelPayment(Long paymentId) {
